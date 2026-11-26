@@ -1,0 +1,7 @@
+import React from 'react';
+import {Text,View} from 'react-native';
+import {useJoinRegion} from '@/hooks/useJoinRegion';
+import {useWarga} from '@/hooks/useWarga';
+import {Screen,Header,layout} from '@/components/layout/Screen';
+import {Button,Feedback,Field} from '@/components/ui/Primitives';
+export function JoinRegionScreen(){const form=useJoinRegion();const warga=useWarga();return <Screen bottom={<><Button title="Kirim Pendaftaran Domisili" busy={form.busy} onPress={()=>{void form.submit();}}/><Button secondary title="Keluar Akun" onPress={()=>{void warga.signOut();}}/></>}><Header title="Jaga Warga" subtitle={warga.profile?.username}/><Text style={layout.title}>Bergabung sebagai Warga</Text><Text style={layout.body}>Gunakan kode undangan dari pengurus. Akun akan menunggu verifikasi setelah bukti domisili dikirim.</Text><Field label="Kode undangan RT/RW" value={form.invite} onChangeText={form.setInvite} autoCapitalize="none" placeholder="Kode dari pengurus wilayah"/><Field label="Nomor rumah / blok" value={form.house} onChangeText={form.setHouse}/><View style={layout.card}><Text style={layout.section}>Bukti Domisili</Text><Text style={layout.caption}>Foto atau PDF, maksimum 10 MB. Bukti bersifat privat.</Text><Button secondary title={form.file?.name??'Unggah Bukti Domisili'} icon="upload" onPress={()=>{void form.pick();}}/></View><Feedback error={form.error} message=""/></Screen>;}

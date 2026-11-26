@@ -1,0 +1,21 @@
+import React from 'react';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Feather } from '@expo/vector-icons';
+import { theme } from '@/constants/theme';
+import { useCommunity } from '@/hooks/useCommunity';
+import { useRouter } from 'expo-router';
+interface ScreenProps { children: React.ReactNode; scroll?: boolean; tab?: boolean; bottom?: React.ReactNode }
+export function Screen({ children, scroll = true, tab = false, bottom }: ScreenProps) {
+  const community = useCommunity(); const router = useRouter();
+  return <SafeAreaView edges={tab ? ['top'] : ['top', 'bottom']} style={layout.screen}>{!community.online || community.queue.length ? <Pressable accessibilityRole="button" onPress={() => router.push({ pathname: '/feature/[key]', params: { key: 'relay' } })} style={({ pressed }) => [layout.offline, { opacity: pressed ? 0.7 : 1 }]}><Feather name="wifi-off" size={18} color={theme.colors.warning} /><Text style={layout.offlineText}>{community.queue.length ? `${community.queue.length} kiriman belum terkirim · Buka antrean` : 'Jaringan terputus · Buka antrean offline'}</Text></Pressable> : null}<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={layout.flex}>{scroll ? <ScrollView style={layout.flex} contentContainerStyle={layout.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>{children}</ScrollView> : <View style={layout.flex}>{children}</View>}{bottom ? <View style={layout.bottom}><View style={layout.bottomInner}>{bottom}</View></View> : null}</KeyboardAvoidingView></SafeAreaView>;
+}
+interface HeaderProps { title: string; subtitle?: string; onBack?: () => void; right?: React.ReactNode }
+export function Header({ title, subtitle, onBack, right }: HeaderProps) { return <View style={layout.header}>{onBack ? <Pressable accessibilityRole="button" accessibilityLabel="Kembali" onPress={onBack} style={({ pressed }) => [layout.back, { opacity: pressed ? 0.6 : 1 }]}><Feather name="arrow-left" size={21} color={theme.colors.ink} /></Pressable> : <View style={layout.logo}><Feather name="shield" size={23} color={theme.colors.danger} /></View>}<View style={layout.flex}><Text style={layout.title}>{title}</Text>{subtitle ? <Text style={layout.caption}>{subtitle}</Text> : null}</View>{right ?? null}</View>; }
+export const layout = StyleSheet.create({
+  offline: { padding: theme.space.xs, paddingHorizontal: theme.space.sm, backgroundColor: theme.colors.warningSoft, flexDirection: 'row', alignItems: 'center', gap: theme.space.xs, minHeight: theme.layout.touch }, offlineText: { flex: 1, color: theme.colors.warning, fontSize: theme.type.caption, lineHeight: 22 },
+  screen: { flex: 1, backgroundColor: theme.colors.background }, flex: { flex: 1 }, content: { padding: theme.space.sm, gap: theme.space.sm, width: '100%', maxWidth: theme.layout.maxWidth, alignSelf: 'center', paddingBottom: theme.space.md },
+  header: { flexDirection: 'row', alignItems: 'center', gap: theme.space.xs, minHeight: 56 }, logo: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' }, back: { width: theme.layout.touch, height: theme.layout.touch, alignItems: 'center', justifyContent: 'center', marginLeft: -theme.space.xs },
+  title: { fontSize: theme.type.title, fontWeight: '700', color: theme.colors.ink, includeFontPadding: false }, caption: { color: theme.colors.muted, fontSize: theme.type.caption, lineHeight: 22, includeFontPadding: false }, body: { fontSize: theme.type.body, color: theme.colors.muted, lineHeight: 26, includeFontPadding: false }, section: { fontSize: theme.type.section, fontWeight: '600', color: theme.colors.ink, includeFontPadding: false },
+  card: { padding: theme.space.sm, gap: theme.space.sm, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border, borderRadius: theme.radius.md }, row: { flexDirection: 'row', alignItems: 'center', gap: theme.space.xs }, bottom: { backgroundColor: theme.colors.background, borderTopWidth: 1, borderTopColor: theme.colors.border, padding: theme.space.sm }, bottomInner: { width: '100%', maxWidth: theme.layout.maxWidth, alignSelf: 'center', gap: theme.space.xs },
+});

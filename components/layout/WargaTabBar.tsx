@@ -1,0 +1,21 @@
+import React from 'react';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { useWarga } from '@/hooks/useWarga';
+import { useEmergency } from '@/hooks/useEmergency';
+import { theme } from '@/constants/theme';
+export function WargaTabBar({ state, navigation }: BottomTabBarProps) {
+  const insets = useSafeAreaInsets(); const router = useRouter(); const { adminMode, session } = useWarga(); const { alerts } = useEmergency();
+  const activeCount = alerts.filter(item => ['active', 'responded'].includes(item.status) && (adminMode || item.user_id === session?.user.id)).length;
+  const tabs: { name: string; label: string; icon: React.ComponentProps<typeof Feather>['name'] }[] = [{ name: 'index', label: adminMode ? 'Ringkasan' : 'Beranda', icon: 'home' }, { name: 'reports', label: adminMode ? 'Laporan' : 'Peta', icon: 'map-pin' }, { name: 'sos', label: 'SOS', icon: 'bell' }, { name: 'residents', label: 'Warga', icon: 'users' }, { name: 'profile', label: adminMode ? 'Kas & Layanan' : 'Profil', icon: adminMode ? 'briefcase' : 'user' }];
+  const bottom = Platform.select({ ios: insets.bottom + 8, android: insets.bottom + 8, default: 8 }) ?? 8;
+  return <View style={[styles.bar, { height: Platform.select({ ios: insets.bottom + 60, android: insets.bottom + 60, default: 70 }), paddingBottom: bottom }]}><View style={styles.inner}>{tabs.map(tab => {
+    if (tab.name === 'sos') return <Pressable key="sos" accessibilityRole="button" accessibilityLabel={adminMode ? 'Buka sinyal SOS warga' : 'Buka tombol darurat SOS'} onPress={() => router.push(adminMode ? { pathname: '/(tabs)/reports', params: { view: 'sos' } } : '/sos')} style={({ pressed }) => [styles.tab, styles.sosTab, { opacity: pressed ? 0.75 : 1, transform: [{ scale: pressed ? 0.94 : 1 }] }]}><View style={styles.sosCircle}><Feather name="bell" size={21} color={theme.colors.white} />{activeCount > 0 ? <View style={styles.badge}><Text style={styles.badgeText}>{activeCount}</Text></View> : null}</View><Text style={styles.sosLabel}>SOS</Text></Pressable>;
+    const route = state.routes.find(item => item.name === tab.name); if (!route) return null; const focused = state.routes[state.index].key === route.key;
+    return <Pressable key={tab.name} accessibilityRole="button" accessibilityLabel={tab.label} accessibilityState={{ selected: focused }} onPress={() => { const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true }); if (!event.defaultPrevented) navigation.navigate(route.name); }} onLongPress={() => { navigation.emit({ type: 'tabLongPress', target: route.key }); }} style={({ pressed }) => [styles.tab, { opacity: pressed ? 0.6 : 1 }]}><Feather name={tab.icon} size={20} color={focused ? theme.colors.danger : theme.colors.muted} /><Text numberOfLines={1} style={[styles.label, focused ? styles.activeLabel : null]}>{tab.label}</Text></Pressable>;
+  })}</View></View>;
+}
+const styles = StyleSheet.create({ bar: { backgroundColor: theme.colors.background, borderTopWidth: 1, borderTopColor: theme.colors.border, paddingTop: theme.space.xs, paddingHorizontal: theme.space.sm }, inner: { flexDirection: 'row', width: '100%', maxWidth: theme.layout.maxWidth, alignSelf: 'center', flex: 1, alignItems: 'center' }, tab: { flex: 1, minHeight: theme.layout.touch, alignItems: 'center', justifyContent: 'center', gap: theme.space.xxs }, label: { fontSize: 10, color: theme.colors.muted, fontWeight: '500' }, activeLabel: { color: theme.colors.danger, fontWeight: '600' }, sosTab: { marginTop: -theme.space.sm }, sosCircle: { width: 42, height: 42, borderRadius: theme.radius.pill, backgroundColor: theme.colors.danger, alignItems: 'center', justifyContent: 'center', borderWidth: 3, borderColor: theme.colors.background }, sosLabel: { color: theme.colors.danger, fontSize: 10, fontWeight: '700' }, badge: { position: 'absolute', right: -3, top: -3, minWidth: 16, height: 16, backgroundColor: theme.colors.ink, borderRadius: theme.radius.pill, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3 }, badgeText: { color: theme.colors.white, fontSize: 9, fontWeight: '600' } });

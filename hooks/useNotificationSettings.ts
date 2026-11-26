@@ -1,0 +1,4 @@
+import {useCommunity} from './useCommunity';
+import {useWarga} from './useWarga';
+import {enableDeviceNotifications} from '@/services/notificationService';
+export function useNotificationSettings(){const state=useCommunity();const warga=useWarga();async function enable(){const result=await state.run(async()=>{const permission=await enableDeviceNotifications();if(permission.token){const pref=state.data.notification_preferences?.find(row=>row.user_id===warga.session?.user.id);const {saveResource}=await import('@/services/communityService');await saveResource('notification_preferences',warga.region!.id,warga.session!.user.id,{push_token:permission.token},pref?.id);await state.load('notification_preferences');}return permission;});if(result)await state.run(async()=>true,result.message);}return{enable};}

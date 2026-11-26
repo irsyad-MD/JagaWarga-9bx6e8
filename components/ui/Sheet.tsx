@@ -1,0 +1,8 @@
+import React from 'react';
+import {Modal,Pressable,StyleSheet,Text,View} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {Feather} from '@expo/vector-icons';
+import {theme} from '@/constants/theme';
+interface SheetProps {visible:boolean;title:string;onClose:()=>void;children:React.ReactNode;}
+export function Sheet({visible,title,onClose,children}:SheetProps){return <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}><View style={styles.overlay}><SafeAreaView style={styles.sheet} edges={['top','bottom']}><View style={styles.header}><Text style={styles.title}>{title}</Text><Pressable accessibilityRole="button" accessibilityLabel="Tutup panel" onPress={onClose} style={({pressed})=>[styles.close,{opacity:pressed?0.5:1}]}><Feather name="x" size={24} color={theme.colors.ink}/></Pressable></View><View style={styles.content}>{children}</View></SafeAreaView></View></Modal>;}
+const styles=StyleSheet.create({overlay:{flex:1,backgroundColor:theme.colors.overlay,justifyContent:'flex-end'},sheet:{flex:1,maxHeight:'94%',width:'100%',maxWidth:theme.layout.maxWidth,alignSelf:'center',backgroundColor:theme.colors.background,borderTopLeftRadius:theme.radius.lg,borderTopRightRadius:theme.radius.lg},header:{minHeight:64,flexDirection:'row',alignItems:'center',paddingHorizontal:theme.space.sm,borderBottomWidth:1,borderBottomColor:theme.colors.border},title:{flex:1,fontSize:theme.type.section,fontWeight:'600',color:theme.colors.ink},close:{width:theme.layout.touch,height:theme.layout.touch,alignItems:'center',justifyContent:'center'},content:{flex:1}});

@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "Jaga Warga",
+    "slug": "onspace-app",
+    "version": "1.0.0",
+    "orientation": "default",
+    "scheme": "onspaceapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FAF9F6"
+        }
+      ],
+      "expo-web-browser",
+      ["expo-camera", { "cameraPermission": "Jaga Warga menggunakan kamera untuk bukti kejadian dan pemindaian QR pos ronda.", "microphonePermission": "Jaga Warga menggunakan mikrofon untuk merekam bukti video.", "recordAudioAndroid": true }],
+      ["expo-image-picker", { "photosPermission": "Jaga Warga memerlukan akses galeri untuk mengunggah bukti kejadian dan domisili.", "cameraPermission": "Jaga Warga menggunakan kamera untuk mengambil bukti kejadian.", "microphonePermission": "Jaga Warga menggunakan mikrofon untuk merekam bukti kejadian." }],
+      ["expo-av", { "microphonePermission": "Jaga Warga menggunakan mikrofon untuk pesan suara laporan." }],
+      "expo-notifications",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Jaga Warga memerlukan lokasi untuk mengirim sinyal SOS dan menandai lokasi kejadian."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
